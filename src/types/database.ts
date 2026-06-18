@@ -43,6 +43,7 @@ export interface Database {
           payment_method: 'cash' | 'card' | 'bank_transfer' | 'other' | null
           is_recurring: boolean
           attachment_url: string | null
+          estimated_duration: string | null
           created_at: string
         }
         Insert: {
@@ -57,6 +58,7 @@ export interface Database {
           payment_method?: 'cash' | 'card' | 'bank_transfer' | 'other' | null
           is_recurring?: boolean
           attachment_url?: string | null
+          estimated_duration?: string | null
           created_at?: string
         }
         Update: {
@@ -71,6 +73,7 @@ export interface Database {
           payment_method?: 'cash' | 'card' | 'bank_transfer' | 'other' | null
           is_recurring?: boolean
           attachment_url?: string | null
+          estimated_duration?: string | null
           created_at?: string
         }
         Relationships: []

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { X, Trash2, Paperclip, ImageIcon, FileText, XCircle } from 'lucide-react'
+import { X, Trash2, Paperclip, ImageIcon, FileText, XCircle, Sparkles, Clock } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from './Toast'
@@ -46,6 +46,8 @@ export default function TransactionDrawer({ open, onClose, onSaved, editTx, cate
   const [newFile, setNewFile] = useState<File | null>(null)
   const [newFilePreview, setNewFilePreview] = useState<string | null>(null)
   const [removeExisting, setRemoveExisting] = useState(false)
+  const [estimatedDuration, setEstimatedDuration] = useState('')
+  const [estimating, setEstimating] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -63,9 +65,11 @@ export default function TransactionDrawer({ open, onClose, onSaved, editTx, cate
       setNote(editTx.note ?? '')
       setIsRecurring(editTx.is_recurring)
       setExistingUrl(editTx.attachment_url ?? null)
+      setEstimatedDuration(editTx.estimated_duration ?? '')
     } else {
       setAmount(''); setType('expense'); setDate(new Date().toISOString().slice(0, 10))
-      setCategoryId(''); setMerchant(''); setPaymentMethod(''); setNote(''); setIsRecurring(false); setExistingUrl(null)
+      setCategoryId(''); setMerchant(''); setPaymentMethod(''); setNote(''); setIsRecurring(false)
+      setExistingUrl(null); setEstimatedDuration('')
     }
     setNewFile(null); setNewFilePreview(null); setRemoveExisting(false); setErrors({}); setConfirmDelete(false)
   }, [editTx, open])
@@ -89,6 +93,25 @@ export default function TransactionDrawer({ open, onClose, onSaved, editTx, cate
     setUploading(false)
     if (error) { toast(`Upload failed: ${error.message}`, 'error'); return null }
     return supabase.storage.from('todo-attach').getPublicUrl(path).data.publicUrl
+  }
+
+  const handleEstimate = async () => {
+    const categoryName = categories.find((c) => c.id === categoryId)?.name ?? undefined
+    setEstimating(true)
+    const { data, error } = await supabase.functions.invoke('estimate-duration', {
+      body: {
+        merchant: merchant || undefined,
+        category: categoryName,
+        note: note || undefined,
+        type,
+      },
+    })
+    setEstimating(false)
+    if (error || !data?.estimated_duration) {
+      toast('Could not get estimate — try again', 'error')
+      return
+    }
+    setEstimatedDuration(data.estimated_duration as string)
   }
 
   const validate = () => {
@@ -123,6 +146,7 @@ export default function TransactionDrawer({ open, onClose, onSaved, editTx, cate
       note: note || null,
       is_recurring: isRecurring,
       attachment_url: attachmentUrl,
+      estimated_duration: estimatedDuration || null,
     }
 
     if (editTx) {
@@ -212,6 +236,24 @@ export default function TransactionDrawer({ open, onClose, onSaved, editTx, cate
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note</label>
             <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} placeholder="Optional note…"
               className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
+          </div>
+
+          {/* Estimated duration */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Estimated duration</label>
+              <button type="button" onClick={handleEstimate} disabled={estimating}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 disabled:opacity-50 transition-colors">
+                <Sparkles size={12} className={estimating ? 'animate-pulse' : ''} />
+                {estimating ? 'Estimating…' : 'Estimate with AI'}
+              </button>
+            </div>
+            <div className="relative">
+              <Clock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input type="text" value={estimatedDuration} onChange={(e) => setEstimatedDuration(e.target.value)}
+                placeholder="e.g. 30 minutes"
+                className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
           </div>
 
           <div>
