@@ -124,7 +124,13 @@ export default function Transactions() {
             className="w-full text-left grid grid-cols-1 md:grid-cols-[120px_1fr_140px_120px_1fr_120px] gap-2 md:gap-4 px-4 py-3 border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
           >
             <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(tx.date)}</span>
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tx.merchant || '—'}</span>
+            <span className="flex items-center gap-2.5 min-w-0">
+              {tx.attachment_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={tx.attachment_url} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0 border border-gray-200 dark:border-gray-700" />
+              )}
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tx.merchant || '—'}</span>
+            </span>
             {tx.categories
               ? <span className="inline-flex items-center self-start px-2.5 py-1 rounded-full text-xs font-medium text-white w-fit" style={{ backgroundColor: tx.categories.color }}>{tx.categories.name}</span>
               : <span className="text-sm text-gray-400">—</span>}
