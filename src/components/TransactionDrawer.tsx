@@ -26,7 +26,7 @@ const ACCEPTED = 'image/jpeg,image/png,image/webp,image/gif,application/pdf,text
 const MAX_BYTES = 10 * 1024 * 1024
 
 function isImage(url: string) {
-  return /\.(jpe?g|png|webp|gif)(\?|$)/i.test(url)
+  return url.startsWith('data:image') || /picsum\.photos/.test(url) || /\.(jpe?g|png|webp|gif|svg)(\?|$)/i.test(url)
 }
 
 export default function TransactionDrawer({ open, onClose, onSaved, editTx, categories }: Props) {
