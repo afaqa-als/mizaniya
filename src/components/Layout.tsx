@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ArrowLeftRight, Tags, Settings, LogOut, Wallet } from 'lucide-react'
+import { LayoutDashboard, ArrowLeftRight, Tags, Sparkles, Settings, LogOut, Wallet } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const NAV = [
   { to: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/transactions', icon: ArrowLeftRight,  label: 'Transactions' },
   { to: '/categories',   icon: Tags,            label: 'Categories' },
+  { to: '/plans',        icon: Sparkles,        label: 'Plans' },
   { to: '/settings',     icon: Settings,        label: 'Settings' },
 ]
 
