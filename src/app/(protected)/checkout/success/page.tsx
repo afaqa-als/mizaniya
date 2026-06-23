@@ -45,6 +45,7 @@ function SuccessInner() {
   }, [paymentId])
 
   const isPaid = result?.status === 'Paid'
+  const isCanceled = result?.status === 'Canceled' || result?.status === 'Failed'
 
   return (
     <div className="w-[460px] mx-auto py-16">
@@ -64,6 +65,19 @@ function SuccessInner() {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 break-words">{error}</p>
             <Link href="/plans" className="inline-block mt-6 px-5 py-2.5 rounded-xl text-sm font-medium border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
               Back to plans
+            </Link>
+          </>
+        ) : isCanceled ? (
+          <>
+            <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-5">
+              <X size={28} className="text-red-500" />
+            </div>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Payment canceled</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Your payment was declined or canceled. Please try again or use a different payment method.
+            </p>
+            <Link href="/plans" className="inline-block mt-6 px-5 py-2.5 rounded-xl text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition-colors">
+              Try again
             </Link>
           </>
         ) : isPaid ? (
