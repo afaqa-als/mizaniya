@@ -73,6 +73,11 @@ function SuccessInner() {
               <X size={28} className="text-red-500" />
             </div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Payment canceled</h1>
+            {result!.currency && (
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-3">
+                {result!.currency}
+              </p>
+            )}
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
               Your payment was declined or canceled. Please try again or use a different payment method.
             </p>
